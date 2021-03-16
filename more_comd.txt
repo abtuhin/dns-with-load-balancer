@@ -1,0 +1,19 @@
+NAT
+  set nat source rule 100 outbound-resource 'eth1'
+  set nat source rule 100 source address '40.40.0.2/24'
+  set nat source rule 100 translation address 'masquerade'
+
+  route -n
+  ip route del 40.40.0.0/24
+
+FIREWALL - inside router
+  iptables -A INPUT -j DROP
+  iptables -A OUTPUT -j DROP
+  iptables -A FORWARD -j DROP
+
+  iptables -I input l -i lo -j ACCEPT
+  iptables -I output l -o lo -j ACCEPT
+
+  iptables -I FORWARD l -s 2.0.0.0/8 -j ACCEPT
+  iptables -I FORWARD l -d 2.0.0.0/8 -j ACCEPT
+
